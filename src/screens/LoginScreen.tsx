@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
-import { login } from '../services/apiServices';
+import { View, TextInput, Button, StyleSheet, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LoginScreen = ({ navigation }: any) => {
@@ -9,32 +8,34 @@ const LoginScreen = ({ navigation }: any) => {
 
   const handleLogin = async () => {
     try {
-      const token = await login(email, password); // Appel de l'API
-      await AsyncStorage.setItem('userToken', token); // Sauvegarde du token
-      Alert.alert('Connexion réussie', 'Vous êtes connecté !');
-      navigation.navigate('Home'); // Navigation vers HomeScreen
-    } catch (error: any) {
-      Alert.alert('Erreur', error.message || 'Une erreur est survenue.');
+      // Remplacer ceci par votre appel API de connexion
+      if (email === 'admin@chakibdrugstore.com' && password === '123456') {
+        // Sauvegarder le token ou autre données d'authentification
+        await AsyncStorage.setItem('userToken', 'fake-token');
+        Alert.alert('Connexion réussie', 'Vous êtes connecté !');
+        navigation.replace('Home'); // Redirection vers HomeScreen
+      } else {
+        Alert.alert('Erreur', 'Identifiants incorrects');
+      }
+    } catch (error) {
+      Alert.alert('Erreur', 'Une erreur est survenue.');
     }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Connexion</Text>
       <TextInput
         style={styles.input}
         placeholder="Email"
         value={email}
         onChangeText={setEmail}
-        keyboardType="email-address"
-        autoCapitalize="none"
       />
       <TextInput
         style={styles.input}
         placeholder="Mot de passe"
+        secureTextEntry
         value={password}
         onChangeText={setPassword}
-        secureTextEntry
       />
       <Button title="Se connecter" onPress={handleLogin} />
     </View>
@@ -44,20 +45,15 @@ const LoginScreen = ({ navigation }: any) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
     justifyContent: 'center',
-  },
-  title: {
-    fontSize: 24,
-    marginBottom: 20,
-    textAlign: 'center',
+    padding: 20,
   },
   input: {
+    height: 40,
+    borderColor: 'gray',
     borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 15,
+    marginBottom: 20,
+    paddingLeft: 10,
   },
 });
 
