@@ -5,20 +5,24 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const LoginScreen = ({ navigation }: any) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
+    setLoading(true);
     try {
-      // Remplacer ceci par votre appel API de connexion
+      // Simuler un appel API pour l'authentification
       if (email === 'admin@chakibdrugstore.com' && password === '123456') {
-        // Sauvegarder le token ou autre données d'authentification
+        // Stocker un jeton fictif pour simuler une session utilisateur
         await AsyncStorage.setItem('userToken', 'fake-token');
         Alert.alert('Connexion réussie', 'Vous êtes connecté !');
-        navigation.replace('Home'); // Redirection vers HomeScreen
+        navigation.replace('Home'); // Redirection vers Home
       } else {
         Alert.alert('Erreur', 'Identifiants incorrects');
       }
     } catch (error) {
       Alert.alert('Erreur', 'Une erreur est survenue.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -37,7 +41,11 @@ const LoginScreen = ({ navigation }: any) => {
         value={password}
         onChangeText={setPassword}
       />
-      <Button title="Se connecter" onPress={handleLogin} />
+      <Button
+        title={loading ? 'Chargement...' : 'Se connecter'}
+        onPress={handleLogin}
+        disabled={loading}
+      />
     </View>
   );
 };

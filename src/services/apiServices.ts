@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
-// Crée une instance Axios configurée
+// Create an Axios instance with a configured base URL and headers
 const api = axios.create({
   baseURL: 'https://api.caisse.fcpo.agency/api',
   headers: {
@@ -9,42 +9,48 @@ const api = axios.create({
   },
 });
 
-// Intercepteur pour ajouter le token aux requêtes
+// Interceptor to add the token to requests
 api.interceptors.request.use(
   async (config) => {
-    const token = await AsyncStorage.getItem('userToken'); // Récupère le token stocké
+    const token = await AsyncStorage.getItem('userToken'); // Get the token from AsyncStorage
+    console.log('Retrieved token:', token);  // Debugging line to check token retrieval
+
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+    } else {
+      console.warn('No token found');  // Warning if the token is missing
     }
+
     return config;
   },
-  (error: any) => {
+  (error) => {
     return Promise.reject(error);
   }
 );
 
-// Fonction pour le login
+// Login function
 export const login = async (email: string, password: string): Promise<string> => {
   try {
-    const response = await api.post('/login', {
-      email,
-      password,
-    });
+    const response = await api.post('/login', { email, password });
+    const token = response.data.token;
 
-    // Retourne le token si la connexion est réussie
-    return response.data.token;
+    // Store the token in AsyncStorage
+    await AsyncStorage.setItem('userToken', token);
+
+    return token;  // Return the token if login is successful
   } catch (error: any) {
     throw new Error(error.response?.data?.message || 'Login failed');
   }
 };
 
-// Fonction pour récupérer les catégories de produits
+// Function to fetch product categories
 export const fetchProductCategories = async (page: number = 1): Promise<any> => {
   try {
     const response = await api.get(`/product-categories?page=${page}`);
-    return response.data; // Retourne les données de l'API
+    return response.data;  // Return the fetched data
   } catch (error: any) {
-    throw new Error(error.response?.data?.message || 'Erreur lors du chargement des catégories');
+    console.error('Error fetching categories:', error);  // Log error details
+    throw new Error(error.response?.data?.message || 'Error loading categories');
   }
 };
 
